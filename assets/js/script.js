@@ -1,10 +1,10 @@
 var taskIdCounter = 0;
-const pageContentEl = document.querySelector('#page-content');  //main element
-const formEl = document.querySelector("#task-form") //form element
-const tasksToDoEl = document.querySelector("#tasks-to-do"); // <ul> holding the created lists
-const tasksInProgressEl = document.querySelector("#tasks-in-progress"); // task in progress list
-const tasksCompletedEl = document.querySelector("#tasks-completed");  //task completed list
-const tasks = []
+var pageContentEl = document.querySelector('#page-content');  //main element
+var formEl = document.querySelector("#task-form") //form element
+var tasksToDoEl = document.querySelector("#tasks-to-do"); // <ul> holding the created lists
+var tasksInProgressEl = document.querySelector("#tasks-in-progress"); // task in progress list
+var tasksCompletedEl = document.querySelector("#tasks-completed");  //task completed list
+var tasks = []
 
 // Form 
 var taskFormHandler = function(event) {
@@ -65,6 +65,8 @@ var createTaskEl = function(taskDataObj) {
   taskDataObj.id = taskIdCounter
 // add id to the tasks obj 
   tasks.push(taskDataObj)
+//save task
+  saveTasks()
 // add 1 to taskCounterId
   taskIdCounter++;
 
@@ -131,7 +133,6 @@ var editTask = function(taskId) {
   var taskSelected = document.querySelector(`.task-item[data-task-id='${taskId}']`);
 // get content from task name and type
   var taskName = taskSelected.querySelector("h3.task-name").textContent;
-  console.log(taskName);
   var taskType = taskSelected.querySelector("span.task-type").textContent;
   document.querySelector("input[name='task-name']").value = taskName;
 // change Add task to "save edits"
@@ -151,10 +152,12 @@ var deleteTask = function(taskId) {
     if (tasks[i].id !== parseInt(taskId)) {
       updatedTaskArr.push(tasks[i]);
     }
+    //reassign tasks array to the array we added the ones we don't want deleted "updatedTaskArr"
   }
-}
-//reassign tasks array to the array we added the ones we don't want deleted "updatedTaskArr"
   tasks = updatedTaskArr;   // ---------------
+  //save
+  saveTasks()
+}
 
 // Edit function (after Editing)
 var completeEditTask = function(taskName, taskType, taskId) {
@@ -169,7 +172,10 @@ var completeEditTask = function(taskName, taskType, taskId) {
       tasks[i].type = taskType;
     }
 };
+//save 
   alert(`Task updated!`);
+  saveTasks()
+
 // remove id from html form  
   formEl.removeAttribute("data-task-id");
 //  change Save Edits to Add task
@@ -194,7 +200,14 @@ var taskStatusChangeHandler = function(event) {
       tasks[i].status = statusValue;
     }
   }
+// save
+  saveTasks()
 };
+
+//  For saving Task array into local storage
+  var saveTasks = function() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  };
 
 // Submitting the form 
   formEl.addEventListener("submit", taskFormHandler);
