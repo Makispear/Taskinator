@@ -209,6 +209,59 @@ var taskStatusChangeHandler = function(event) {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   };
 
+// for retrieving tasks from local storage
+  var loadTasks = function() {
+// Gets task items from localStorage.
+  var tasks = JSON.parse(localStorage.getItem("tasks"))
+
+  if (tasks === null) {
+    tasks = []
+    return false
+  } 
+// Converts tasks from the string format back into an array of objects.
+
+// Iterates through a tasks array and creates task elements on the page from it.
+  for (i = 0; i < tasks.length; i++) {
+    tasks[i].id = taskIdCounter;
+
+    var listItemEl = document.createElement("li");
+    listItemEl.className = "task-item";
+    listItemEl.setAttribute("data-task-id", tasks[i].id);
+
+    var taskInfoEl = document.createElement("div");
+    taskInfoEl.className = "task-info";
+    taskInfoEl.innerHTML = `<h3 class='task-name'>${tasks[i].name}<h3><span class='task-type'>${tasks[i].type}</span>`;
+      listItemEl.appendChild(taskInfoEl);
+
+    var taskActionEl = createTaskActions(tasks[i].id);
+      listItemEl.appendChild(taskActionEl);
+
+      if (tasks[i].status === "to do") {
+        listItemEl.querySelector("select[name='status-change']").selectedIndex = 0;
+        tasksToDoEl.appendChild(listItemEl)
+      } else if (tasks[i].status === "in progress") {
+        listItemEl.querySelector("select[name='status-change']").selectedIndex = 1;
+        tasksInProgressEl.appendChild(listItemEl);
+      } else if (tasks[i].status === "complete") {
+        listItemEl.querySelector("select[name='status-change']").selectedIndex = 2;
+        tasksCompletedEl.appendChild(listItemEl);
+      }
+ // add 1 to taskCounterId
+      taskIdCounter++;
+    }
+  }
+  
+
+  loadTasks()
+
+//   for (let i = 0; i < tasks.length; i++) {
+//     if (tasks[i].id === parseInt(taskId)) {
+//       tasks[i].name = taskName;
+//       tasks[i].type = taskType;
+//     }
+// };
+
+
 // Submitting the form 
   formEl.addEventListener("submit", taskFormHandler);
 // Action buttons 
